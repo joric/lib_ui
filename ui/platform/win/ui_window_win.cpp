@@ -720,6 +720,7 @@ void WindowHelper::updateWindowFrameColors() {
 }
 
 void WindowHelper::updateWindowFrameColors(bool active) {
+	return; // system frame, always use default colors
 	if (!::Platform::IsWindows11OrGreater()) {
 		return;
 	}

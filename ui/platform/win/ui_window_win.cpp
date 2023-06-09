@@ -719,8 +719,31 @@ void WindowHelper::updateWindowFrameColors() {
 	updateWindowFrameColors(window()->isActiveWindow());
 }
 
+DWORD GetSystemColorPrevalenceValue() {
+	const auto keyName = L""
+		"Software\\Microsoft\\Windows\\DWM";
+	const auto valueName = L"ColorPrevalence";
+	auto key = HKEY();
+	auto result = RegOpenKeyEx(HKEY_CURRENT_USER, keyName, 0, KEY_READ, &key);
+	if (result != ERROR_SUCCESS) {
+		return 0;
+	}
+
+	DWORD value = 0, type = 0, size = sizeof(value);
+	result = RegQueryValueEx(key, valueName, 0, &type, (LPBYTE)&value, &size);
+	RegCloseKey(key);
+	if (result != ERROR_SUCCESS) {
+		return 0;
+	}
+
+	return value;
+}
+
 void WindowHelper::updateWindowFrameColors(bool active) {
 	if (!::Platform::IsWindows11OrGreater()) {
+		return;
+	}
+	if (GetSystemColorPrevalenceValue() == 1) {
 		return;
 	}
 	const auto bg = active
